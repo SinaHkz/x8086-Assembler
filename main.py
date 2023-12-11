@@ -189,14 +189,18 @@ def oneOperand(instruction, regMem1, count, res):
             res.append(zeroExtend(hex(count)) + "66 5" + decToHex(partBinaryToDec(reg16Bit.get(regMem1))))
             return 2
         try:  # handle push imm.
+            isNeg = False
             if int(regMem1) < 0:
-
-                temp = hex(int(regMem1))[3:]
+                temp = complement16(hex(int(regMem1))[3:])  # convert -100dec to 100 in hex
+                isNeg = True
                 print(temp)
             else:
                 temp = hex(int(regMem1))[2:]
-            if 2 < len(temp) < 5:
-                temp = "0" * (8 - len(temp)) + temp
+            if -128 > int(regMem1) or int(regMem1) > 127:
+                if isNeg:
+                    temp = "f" * (8 - len(temp)) + temp
+                else:
+                    temp = "0" * (8 - len(temp)) + temp
                 string = "68 "
                 counter = 1
                 for i in range(len(temp) - 2, -1, -2):
@@ -204,10 +208,11 @@ def oneOperand(instruction, regMem1, count, res):
                     counter += 1
                 res.append(zeroExtend(hex(count)) + string)
                 return counter
-            elif len(temp) > 5:
+            elif len(temp) > 8:
                 raise Exception
             elif len(temp) < 2:
                 temp = "0" + temp
+                res.append(zeroExtend(hex(count)) + "6a " + temp)
             else:
                 res.append(zeroExtend(hex(count)) + "6a " + temp)
             return 2
@@ -293,11 +298,6 @@ def immOprand(instruction, regMem, imm, count, res):
     else:
         res.append("invalid")
         return 0
-
-
-def checkInputMode(line):
-    checkLabel = line
-
 
 
 with open('inputs.txt') as file:
