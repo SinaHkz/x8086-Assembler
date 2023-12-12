@@ -1,3 +1,1 @@
-add ecx,eax
-push 4
-dec edx
+push -6

@@ -44,12 +44,16 @@ def zeroExtend(string):
 
 
 def complement16(num):
-    num = str(num)
-    num = [*num]
-    for i in range(len(num)):  # 16's complement
-        num[i] = hex(15 - int(num[i], 16))[2:]
-    num = "".join(num)
-    num = hex(int(num, 16) + 1)[2:]
+    num += 256
+    num = hex(num)[2:]
+    # num = str(num)
+    # num = [*num]
+    # for i in range(len(num)):  # 16's complement
+    #     num[i] = hex(15 - int(num[i], 16))[2:]
+    # num = "".join(num)
+    # num = hex(int(num, 16) + 1)[2:]
+    if len(num) < 2:  # only neg num come here and should get extended by f.
+        num = "f" * (2 - len(num)) + num
     return num
 
 
@@ -191,7 +195,8 @@ def oneOperand(instruction, regMem1, count, res):
         try:  # handle push imm.
             isNeg = False
             if int(regMem1) < 0:
-                temp = complement16(hex(int(regMem1))[3:])  # convert -100dec to 100 in hex
+                temp = complement16(
+                    int(regMem1))  # convert -100dec to 100 in hex  | only neg num get passed to 16 compliment
                 isNeg = True
                 print(temp)
             else:
