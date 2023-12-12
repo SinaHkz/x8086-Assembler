@@ -37,6 +37,13 @@ opCodesInstructions = {
     "push": "110010",
     "pop": "110110"
 }
+opCodesInstructionsForImm = {
+    "add": "05",
+    "or": "0d",
+    "and": "25",
+    "sub": "2d",
+    "xor": "35",
+}
 
 
 def zeroExtend(string):
@@ -44,7 +51,12 @@ def zeroExtend(string):
 
 
 def complement16(num):
-    num += 256
+    if num > -128:
+        num += 256
+    elif num > -(2 ** 15):
+        num += 2 ** 16
+    else:
+        num += 2 ** 32
     num = hex(num)[2:]
     # num = str(num)
     # num = [*num]
@@ -52,7 +64,7 @@ def complement16(num):
     #     num[i] = hex(15 - int(num[i], 16))[2:]
     # num = "".join(num)
     # num = hex(int(num, 16) + 1)[2:]
-    if len(num) < 2:  # only neg num come here and should get extended by f.
+    if len(num) < 2:  # only neg numbers come here and should get extended by f.
         num = "f" * (2 - len(num)) + num
     return num
 
@@ -100,6 +112,36 @@ def binaryToHex(string):
     str1 = decToHex(partBinaryToDec(str1))
     str2 = decToHex(partBinaryToDec(str2))
     return str1 + str2
+
+
+def littleEdnian(imm, bit):
+    try:  # handle push imm.
+        isNeg = False
+        if int(imm) < 0:
+            temp = complement16(
+                int(imm))  # convert -100dec to 100 in hex  | only neg num get passed to 16 compliment
+            isNeg = True
+        else:
+            temp = hex(int(imm))[2:]
+        if -128 > int(imm) or int(imm) > 127:
+            if isNeg:
+                temp = "f" * (bit // 4 - len(temp)) + temp  # bit is for little endian in 16 bit and 32 bit
+            else:
+                temp = "0" * (bit // 4 - len(temp)) + temp
+            string = ""
+            for i in range(len(temp) - 2, -1, -2):
+                string += temp[i:i + 2] + " "
+            return string
+        elif len(temp) > 8:
+            raise Exception
+        elif len(temp) < 2:
+            temp = "0" + temp
+            return temp
+        else:
+            return temp
+    except:
+        res.append("invalid")
+        return 0
 
 
 def twoOperand(instruction, regMem1, regMem2, count, res):
@@ -192,44 +234,50 @@ def oneOperand(instruction, regMem1, count, res):
         elif regMem1 in reg16Bit.keys():
             res.append(zeroExtend(hex(count)) + "66 5" + decToHex(partBinaryToDec(reg16Bit.get(regMem1))))
             return 2
-        try:  # handle push imm.
-            isNeg = False
-            if int(regMem1) < 0:
-                temp = complement16(
-                    int(regMem1))  # convert -100dec to 100 in hex  | only neg num get passed to 16 compliment
-                isNeg = True
-                print(temp)
-            else:
-                temp = hex(int(regMem1))[2:]
-            if -128 > int(regMem1) or int(regMem1) > 127:
-                if isNeg:
-                    temp = "f" * (8 - len(temp)) + temp
-                else:
-                    temp = "0" * (8 - len(temp)) + temp
-                string = "68 "
-                counter = 1
-                for i in range(len(temp) - 2, -1, -2):
-                    string += temp[i:i + 2] + " "
-                    counter += 1
-                res.append(zeroExtend(hex(count)) + string)
-                return counter
-            elif len(temp) > 8:
-                raise Exception
-            elif len(temp) < 2:
-                temp = "0" + temp
-                res.append(zeroExtend(hex(count)) + "6a " + temp)
-            else:
-                res.append(zeroExtend(hex(count)) + "6a " + temp)
-            return 2
-        except:
-            res.append("invalid")
-            return 0
+        string = littleEdnian(regMem1,32)
+        if -128 > int(regMem1) or int(regMem1) > 127:
+            res.append(zeroExtend(hex(count)) + "68 " + string)
+            return len(string) //3 + 1
+        res.append(zeroExtend(hex(count)) + "6a " + string)
+        return len(string)//3 + 1
+        # try:  # handle push imm.
+        #     isNeg = False
+        #     if int(regMem1) < 0:
+        #         temp = complement16(
+        #             int(regMem1))  # convert -100dec to 100 in hex  | only neg num get passed to 16 compliment
+        #         isNeg = True
+        #         print(temp)
+        #     else:
+        #         temp = hex(int(regMem1))[2:]
+        #     if -128 > int(regMem1) or int(regMem1) > 127:
+        #         if isNeg:
+        #             temp = "f" * (8 - len(temp)) + temp
+        #         else:
+        #             temp = "0" * (8 - len(temp)) + temp
+        #         string = "68 "
+        #         counter = 1
+        #         for i in range(len(temp) - 2, -1, -2):
+        #             string += temp[i:i + 2] + " "
+        #             counter += 1
+        #         res.append(zeroExtend(hex(count)) + string)
+        #         return counter
+        #     elif len(temp) > 8:
+        #         raise Exception
+        #     elif len(temp) < 2:
+        #         temp = "0" + temp
+        #         res.append(zeroExtend(hex(count)) + "6a " + temp)
+        #     else:
+        #         res.append(zeroExtend(hex(count)) + "6a " + temp)
+        #     return 2
+        # except:
+        #     res.append("invalid")
+        #     return 0
     elif instruction == "dec" and regMem1[0] != "[":
         if regMem1 in reg32Bit.keys():
             x = partBinaryToDec(reg32Bit.get(regMem1))
             x += 48
             if x < 50:
-                res.append(zeroExtend(hex(count)) + x)
+                res.append(zeroExtend(hex(count)) + str(x))
                 return 1
             else:
                 res.append(zeroExtend(hex(count)) + "4" + decToHex(x % 40))
@@ -281,19 +329,29 @@ def immOprand(instruction, regMem, imm, count, res):
         second = hex(imm)[2:]
         if len(second) < 2:
             second = "0" + second
-        if len(second) > 2:
+        if len(second) > 8:
             res.append("invalid")
             return 0
-        newOpCode = "11" + opCodesInstructions.get(instruction)[2:]
-        first = binaryToHex(newOpCode + "01")
-        res.append(zeroExtend(hex(count)) + "83 " + first + " " + second + " ")
-        return 3
+        if -128 < imm < 127:
+            newOpCode = "11" + opCodesInstructions.get(instruction)[2:]
+            first = binaryToHex(newOpCode + "00")
+            res.append(zeroExtend(hex(count)) + "83 " + first + " " + second + " ")
+            return 3
+        else:
+            immHex = littleEdnian(imm, 32)
+            res.append(zeroExtend(hex(count)) + opCodesInstructionsForImm.get(instruction) + " " + immHex)
+            return len(immHex) // 3 + 1
     elif regMem in reg16Bit.keys():  # 16 bit register with imm
-        second = hex(imm)
-        newOpCode = "11" + opCodesInstructions.get(instruction)[2:]
-        first = binaryToHex(newOpCode + "01")
-        res.append(zeroExtend(hex(count)) + "66 83 " + first + " " + second + " ")
-        return 4
+        if -128 < imm < 127:
+            second = hex(imm)
+            newOpCode = "11" + opCodesInstructions.get(instruction)[2:]
+            first = binaryToHex(newOpCode + "01")
+            res.append(zeroExtend(hex(count)) + "66 83 " + first + " " + second + " ")
+            return 4
+        else:
+            immHex = littleEdnian(imm, 16)
+            res.append(zeroExtend(hex(count)) + "66 " + opCodesInstructionsForImm.get(instruction) + " " + immHex)
+            return len(immHex) // 3 + 2
     elif regMem in reg8Bit.keys():  # 8 bit register with imm
         second = hex(imm)
         newOpCode = "11" + opCodesInstructions.get(instruction)[2:]
@@ -350,6 +408,5 @@ with open('inputs.txt') as file:
                 num = label[jmpLoc[i][0]] - jmpLoc[i][2]
                 num += 256
                 res[jmpLoc[i][1]] += str(hex(num))[2:]
-
-    for i in res:
-        print(i)
+for i in res:
+    print(i)
