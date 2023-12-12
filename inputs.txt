@@ -1,5 +1,7 @@
+and ax,-1231
 and eax,-1111
 push 1
 push 129
 push -1
 push -140
+push 5435234
