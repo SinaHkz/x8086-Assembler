@@ -51,7 +51,7 @@ def zeroExtend(string):
 
 
 def complement16(num):
-    if -129 < num < 128:
+    if -129 < num:
         num += 256
     else:
         num += 2 ** 32
@@ -286,33 +286,50 @@ def oneOperand(instruction, regMem1, count, res):
 
 
 def immOprand(instruction, regMem, imm, count, res):
-    if regMem in reg32Bit.keys():  # 32 bit register with imm
-        second = hex(imm)[2:]
-        if len(second) < 2:
-            second = "0" + second
-        if len(second) > 8:
-            res.append("invalid")
-            return 0
+    if regMem in reg32Bit.keys() or regMem in reg16Bit.keys():  # 32 bit register with imm
         if -128 < imm < 127:
+            if imm < 0:
+                second = complement16(imm)
+            else:
+                second = hex(imm)[2:]
+                if len(second) < 2:
+                    second = "0" + second
+            flaq = False
             newOpCode = "11" + opCodesInstructions.get(instruction)[2:]
             first = binaryToHex(newOpCode + "00")
-            res.append(zeroExtend(hex(count)) + "83 " + first + " " + second + " ")
+            machineCode = "83 " + first + " " + second + " "
+            if regMem in reg16Bit.keys():
+                machineCode = "66 " + machineCode
+                flaq = True
+            res.append(zeroExtend(hex(count)) + machineCode)
+            if flaq:
+                return 4
             return 3
         else:
-            immHex = littleEdnian(imm, 32)
-            res.append(zeroExtend(hex(count)) + opCodesInstructionsForImm.get(instruction) + " " + immHex)
-            return len(immHex) // 3 + 1
-    elif regMem in reg16Bit.keys():  # 16 bit register with imm
-        if -128 < imm < 127:
-            second = hex(imm)
-            newOpCode = "11" + opCodesInstructions.get(instruction)[2:]
-            first = binaryToHex(newOpCode + "01")
-            res.append(zeroExtend(hex(count)) + "66 83 " + first + " " + second + " ")
-            return 4
-        else:
+            flaq = False
             immHex = littleEdnian(imm, 16)
-            res.append(zeroExtend(hex(count)) + "66 " + opCodesInstructionsForImm.get(instruction) + " " + immHex)
-            return len(immHex) // 3 + 2
+            machineCode = opCodesInstructionsForImm.get(instruction) + " " + immHex
+            if regMem in reg16Bit.keys():
+                machineCode = "66 " + machineCode
+                flaq = True
+            res.append(zeroExtend(hex(count)) + machineCode)
+            if flaq:
+                return len(immHex) // 3 + 2
+            return len(immHex) // 3 + 1
+    # elif regMem in reg16Bit.keys():  # 16 bit register with imm
+    #     if -128 < imm < 127:
+    #         if imm < 0:
+    #             second = complement16(imm)
+    #         else:
+    #             second = hex(imm)[2:]
+    #         newOpCode = "11" + opCodesInstructions.get(instruction)[2:]
+    #         first = binaryToHex(newOpCode + "00")
+    #         res.append(zeroExtend(hex(count)) + "66 83 " + first + " " + second + " ")
+    #         return 4
+    #     else:
+    #         immHex = littleEdnian(imm, 16)
+    #         res.append(zeroExtend(hex(count)) + "66 " + opCodesInstructionsForImm.get(instruction) + " " + immHex)
+    #         return len(immHex) // 3 + 2
     elif regMem in reg8Bit.keys():  # 8 bit register with imm
         second = hex(imm)
         newOpCode = "11" + opCodesInstructions.get(instruction)[2:]
