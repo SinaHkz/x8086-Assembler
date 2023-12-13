@@ -1,1 +1,2 @@
-and ax,-1231
+and eax,-50
+add eax,ecx

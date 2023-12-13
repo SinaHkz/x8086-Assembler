@@ -61,7 +61,7 @@ def complement16(num):
     return num
 
 
-def mod11_00(regMem1, regMem2, num, mod):
+def generateModString(regMem1, regMem2, num, mod):
     str = mod
     if num == 32:
         str += reg32Bit.get(regMem1)
@@ -138,19 +138,19 @@ def littleEdnian(imm, bit):
 
 def twoOperand(instruction, regMem1, regMem2, count, res):
     if regMem1 in reg32Bit.keys() and regMem2 in reg32Bit.keys():  # 32 bit register in mod 11
-        second = mod11_00(regMem2, regMem1, 32, "11")
+        second = generateModString(regMem2, regMem1, 32, "11")
         second = binaryToHex(second)
         first = binaryToHex(opCodesInstructions.get(instruction) + "01")
         res.append(zeroExtend(hex(count)) + first + " " + second + " ")
         return 2
     elif regMem1 in reg16Bit.keys() and regMem2 in reg16Bit.keys():  # 16 bit register in mod 11
-        second = mod11_00(regMem2, regMem1, 16, "11")
+        second = generateModString(regMem2, regMem1, 16, "11")
         second = binaryToHex(second)
         first = binaryToHex(opCodesInstructions.get(instruction) + "01")
         res.append(zeroExtend(hex(count)) + "66 " + first + " " + second + " ")
         return 3
     elif regMem1 in reg8Bit.keys() and regMem2 in reg8Bit.keys():  # 8 bit register in mod 11
-        second = mod11_00(regMem2, regMem1, 8, "11")
+        second = generateModString(regMem2, regMem1, 8, "11")
         second = binaryToHex(second)
         first = binaryToHex(opCodesInstructions.get(instruction) + "00")
         res.append(zeroExtend(hex(count)) + first + " " + second + " ")
@@ -159,19 +159,19 @@ def twoOperand(instruction, regMem1, regMem2, count, res):
 
     elif regMem1[0] == '[' and regMem1[-1] == ']' and regMem1[
                                                       1:-1] in reg32Bit.keys() and regMem2 in reg32Bit.keys():  # this part is for (instruction [REG],REG).
-        second = mod11_00(regMem2, regMem1[1:-1], 32, "00")
+        second = generateModString(regMem2, regMem1[1:-1], 32, "00")
         second = binaryToHex(second)
         first = binaryToHex(opCodesInstructions.get(instruction) + "01")
         res.append(zeroExtend(hex(count)) + first + ' ' + second)
         return 2
     elif regMem1[0] == '[' and regMem1[-1] == ']' and regMem1[1:-1] in reg32Bit.keys() and regMem2 in reg16Bit.keys():
-        second = mod11_00(regMem2, regMem1[1:-1], 16, "00")
+        second = generateModString(regMem2, regMem1[1:-1], 16, "00")
         second = binaryToHex(second)
         first = binaryToHex(opCodesInstructions.get(instruction) + "01")
         res.append(zeroExtend(hex(count)) + "66 " + first + ' ' + second)
         return 3
     elif regMem1[0] == '[' and regMem1[-1] == ']' and regMem1[1:-1] in reg32Bit.keys() and regMem2 in reg8Bit:
-        second = mod11_00(regMem2, regMem1[1:-1], 8, "00")
+        second = generateModString(regMem2, regMem1[1:-1], 8, "00")
         second = binaryToHex(second)
         first = binaryToHex(opCodesInstructions.get(instruction) + "00")
         res.append(zeroExtend(hex(count)) + first + ' ' + second)
@@ -180,19 +180,19 @@ def twoOperand(instruction, regMem1, regMem2, count, res):
 
     elif regMem2[0] == '[' and regMem2[-1] == ']' and regMem2[
                                                       1:-1] in reg32Bit.keys() and regMem1 in reg32Bit.keys():  # this part is for (instruction REG,[REG]).
-        second = mod11_00(regMem1, regMem2[1:-1], 32, "00")
+        second = generateModString(regMem1, regMem2[1:-1], 32, "00")
         second = binaryToHex(second)
         first = binaryToHex(opCodesInstructions.get(instruction) + "11")
         res.append(zeroExtend(hex(count)) + first + ' ' + second)
         return 2
     elif regMem2[0] == '[' and regMem2[-1] == ']' and regMem2[1:-1] in reg32Bit.keys() and regMem1 in reg16Bit.keys():
-        second = mod11_00(regMem1, regMem2[1:-1], 16, "00")
+        second = generateModString(regMem1, regMem2[1:-1], 16, "00")
         second = binaryToHex(second)
         first = binaryToHex(opCodesInstructions.get(instruction) + "11")
         res.append(zeroExtend(hex(count)) + "66 " + first + ' ' + second)
         return 3
     elif regMem2[0] == '[' and regMem2[-1] == ']' and regMem2[1:-1] in reg32Bit.keys() and regMem1 in reg8Bit:
-        second = mod11_00(regMem1, regMem2[1:-1], 8, "00")
+        second = generateModString(regMem1, regMem2[1:-1], 8, "00")
         second = binaryToHex(second)
         first = binaryToHex(opCodesInstructions.get(instruction) + "10")
         res.append(zeroExtend(hex(count)) + first + ' ' + second)
