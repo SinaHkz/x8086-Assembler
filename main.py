@@ -80,29 +80,29 @@ def generateModString(regMem1, regMem2, num, mod):
     return str
 
 
-def decToHex(a):
-    if a < 10:
-        string = str(a)
-        return string
-    else:
-        return chr(a % 10 + ord('a'))
+# def decToHex(a):
+#     if a < 10:
+#         string = str(a)
+#         return string
+#     else:
+#         return chr(a % 10 + ord('a'))
 
 
-def partBinaryToDec(string):
-    i = len(string) - 1
-    sum = 0
-    while i >= 0:
-        x = int(string[i])
-        sum += x * (2 ** (len(string) - i - 1))
-        i -= 1
-    return sum
+# def partBinaryToDec(string):
+#     i = len(string) - 1
+#     sum = 0
+#     while i >= 0:
+#         x = int(string[i])
+#         sum += x * (2 ** (len(string) - i - 1))
+#         i -= 1
+#     return sum
 
 
 def binaryToHex(string):
     str1 = string[:4]
     str2 = string[4:]
-    str1 = decToHex(partBinaryToDec(str1))
-    str2 = decToHex(partBinaryToDec(str2))
+    str1 = hex(int(str1, 2))[2:]
+    str2 = hex(int(str2, 2))[2:]
     return str1 + str2
 
 
@@ -205,13 +205,13 @@ def oneOperand(instruction, regMem1, count, res):
         return 0
     if instruction == "inc" and regMem1[0] != "[":
         if regMem1 in reg32Bit.keys():
-            res.append(zeroExtend(hex(count)) + "4" + decToHex(partBinaryToDec(reg32Bit.get(regMem1))))
+            res.append(zeroExtend(hex(count)) + "4" + hex(int(reg32Bit.get(regMem1), 2))[2:])
             return 1
         elif regMem1 in reg16Bit.keys():
-            res.append(zeroExtend(hex(count)) + "66 4" + decToHex(partBinaryToDec(reg16Bit.get(regMem1))))
+            res.append(zeroExtend(hex(count)) + "66 4" + hex(int(reg16Bit.get(regMem1), 2))[2:])
             return 2
         elif regMem1 in reg8Bit.keys():
-            res.append(zeroExtend(hex(count)) + "fe" + " " + binaryToHex("11000" + reg8Bit.get(regMem1)))
+            res.append(zeroExtend(hex(count)) + "fe" + " " + hex(int("11000" + reg8Bit.get(regMem1), 2))[2:])
             return 2
         else:
             res.append("invalid")
@@ -221,10 +221,10 @@ def oneOperand(instruction, regMem1, count, res):
         elif regMem1[-1] == 'b':
             regMem1 = int(regMem1[:-1], 8)
         if regMem1 in reg32Bit.keys():
-            res.append(zeroExtend(hex(count)) + "5" + decToHex(partBinaryToDec(reg32Bit.get(regMem1))))
+            res.append(zeroExtend(hex(count)) + "5" + hex(int(reg32Bit.get(regMem1), 2))[2:])
             return 1
         elif regMem1 in reg16Bit.keys():
-            res.append(zeroExtend(hex(count)) + "66 5" + decToHex(partBinaryToDec(reg16Bit.get(regMem1))))
+            res.append(zeroExtend(hex(count)) + "66 5" + hex(int(reg16Bit.get(regMem1)))[2:])
             return 2
         string = littleEdnian(regMem1, 32)  # 32 bit immediate
         if -128 > int(regMem1) or int(regMem1) > 127:
@@ -235,50 +235,50 @@ def oneOperand(instruction, regMem1, count, res):
 
     elif instruction == "dec" and regMem1[0] != "[":
         if regMem1 in reg32Bit.keys():
-            x = partBinaryToDec(reg32Bit.get(regMem1))
+            x = int(reg32Bit.get(regMem1), 2)
             x += 48
             if x < 50:
                 res.append(zeroExtend(hex(count)) + str(x))
                 return 1
             else:
-                res.append(zeroExtend(hex(count)) + "4" + decToHex(x % 40))
+                res.append(zeroExtend(hex(count)) + "4" + hex(x % 40)[2:])
                 return 1
         elif regMem1 in reg16Bit.keys():
-            x = partBinaryToDec(reg16Bit.get(regMem1))
+            x = int(reg16Bit.get(regMem1), 2)
             x += 48
             if x < 50:
                 res.append(zeroExtend(hex(count)) + "66 " + str(x))
                 return 2
             else:
-                res.append(zeroExtend(hex(count)) + "66 4" + decToHex(x % 40))
+                res.append(zeroExtend(hex(count)) + "66 4" + hex(x % 40)[2:])
                 return 2
         elif regMem1 in reg8Bit.keys():
-            res.append(zeroExtend(hex(count)) + "fe" + " " + binaryToHex("11001" + reg8Bit.get(regMem1)))
+            res.append(zeroExtend(hex(count)) + "fe" + " " + hex(int("11001" + reg8Bit.get(regMem1), 2))[2:])
             return 2
         else:
             res.append("invalid")
             return 0
     elif instruction == "pop" and regMem1[0] != "[":
         if regMem1 in reg32Bit.keys():
-            x = partBinaryToDec(reg32Bit.get(regMem1))
+            x = int(reg32Bit.get(regMem1), 2)
             x += 58
             if x < 60:
                 res.append(zeroExtend(hex(count)) + str(x))
                 return 1
             else:
-                res.append(zeroExtend(hex(count)) + "5" + decToHex(x % 50))
+                res.append(zeroExtend(hex(count)) + "5" + hex(x % 50)[2:])
                 return 1
         elif regMem1 in reg16Bit.keys():
-            x = partBinaryToDec(reg16Bit.get(regMem1))
+            x = int(reg16Bit.get(regMem1), 2)
             x += 58
             if x < 60:
                 res.append(zeroExtend(hex(count)) + "66 " + str(x))
                 return 2
             else:
-                res.append(zeroExtend(hex(count)) + "66 5" + decToHex(x % 50))
+                res.append(zeroExtend(hex(count)) + "66 5" + hex(x % 50)[2:])
                 return 2
         elif regMem1 in reg8Bit.keys():
-            res.append(zeroExtend(hex(count)) + "fe" + " " + binaryToHex("11001" + reg8Bit.get(regMem1)))
+            res.append(zeroExtend(hex(count)) + "fe" + " " + hex(int("11001" + reg8Bit.get(regMem1), 2))[2:])
             return 2
         else:
             res.append("invalid")
@@ -286,7 +286,7 @@ def oneOperand(instruction, regMem1, count, res):
 
 
 def immOprand(instruction, regMem, imm, count, res):
-    if regMem in reg32Bit.keys() or regMem in reg16Bit.keys():  # 32 bit register with imm
+    if regMem in reg32Bit.keys() or regMem in reg16Bit.keys():  # 32-16 bit register with imm
         if -128 < imm < 127:
             if imm < 0:
                 second = complement16(imm)
@@ -316,20 +316,6 @@ def immOprand(instruction, regMem, imm, count, res):
             if flaq:
                 return len(immHex) // 3 + 2
             return len(immHex) // 3 + 1
-    # elif regMem in reg16Bit.keys():  # 16 bit register with imm
-    #     if -128 < imm < 127:
-    #         if imm < 0:
-    #             second = complement16(imm)
-    #         else:
-    #             second = hex(imm)[2:]
-    #         newOpCode = "11" + opCodesInstructions.get(instruction)[2:]
-    #         first = binaryToHex(newOpCode + "00")
-    #         res.append(zeroExtend(hex(count)) + "66 83 " + first + " " + second + " ")
-    #         return 4
-    #     else:
-    #         immHex = littleEdnian(imm, 16)
-    #         res.append(zeroExtend(hex(count)) + "66 " + opCodesInstructionsForImm.get(instruction) + " " + immHex)
-    #         return len(immHex) // 3 + 2
     elif regMem in reg8Bit.keys():  # 8 bit register with imm
         second = hex(imm)
         newOpCode = "11" + opCodesInstructions.get(instruction)[2:]
