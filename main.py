@@ -51,14 +51,9 @@ def zeroExtend(string):
 
 
 def complement16(num):
-    if num > -128:
-        num += 256
-    elif num > -(2 ** 15):
-        num += 2 ** 16
-    else:
-        num += 2 ** 32
+    num += 256
     num = hex(num)[2:]
-    if len(num) < 2:  # only neg numbers come here and should get extended by f.
+    if len(num) < 2:  # only neg num come here and should get extended by f.
         num = "f" * (2 - len(num)) + num
     return num
 
