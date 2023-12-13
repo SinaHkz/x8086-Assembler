@@ -1,2 +1,0 @@
-and eax,-50
-add eax,ecx
