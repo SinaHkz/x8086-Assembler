@@ -37,7 +37,7 @@ opCodesInstructions = {
     "push": "110010",
     "pop": "110110"
 }
-opCodesInstructionsForImm = {
+opCodesInstructionsForAx = {
     "add": "05",
     "or": "0d",
     "and": "25",
@@ -78,24 +78,6 @@ def generateModString(regMem1, regMem2, num, mod):
     else:
         str += reg8Bit.get(regMem2)
     return str
-
-
-# def decToHex(a):
-#     if a < 10:
-#         string = str(a)
-#         return string
-#     else:
-#         return chr(a % 10 + ord('a'))
-
-
-# def partBinaryToDec(string):
-#     i = len(string) - 1
-#     sum = 0
-#     while i >= 0:
-#         x = int(string[i])
-#         sum += x * (2 ** (len(string) - i - 1))
-#         i -= 1
-#     return sum
 
 
 def binaryToHex(string):
@@ -294,32 +276,45 @@ def immOprand(instruction, regMem, imm, count, res):
                 second = hex(imm)[2:]
                 if len(second) < 2:
                     second = "0" + second
-            flaq = False
-            newOpCode = "11" + opCodesInstructions.get(instruction)[2:]
-            first = binaryToHex(newOpCode + "00")
+            is16bit = False
+            first = "11" + opCodesInstructions.get(instruction)[2:5] + reg32Bit.get(regMem1)
+            first = binaryToHex(first)
             machineCode = "83 " + first + " " + second + " "
             if regMem in reg16Bit.keys():
                 machineCode = "66 " + machineCode
-                flaq = True
+                is16bit = True
             res.append(zeroExtend(hex(count)) + machineCode)
-            if flaq:
+            if is16bit:
                 return 4
             return 3
         else:
-            flaq = False
-            immHex = littleEdnian(imm, 16)
-            machineCode = opCodesInstructionsForImm.get(instruction) + " " + immHex
+            is16bit = False
+            if regMem1 in reg32Bit:
+                immHex = littleEdnian(imm, 32)
+            else:
+                immHex = littleEdnian(imm, 16)
+            if instruction == "ax" or instruction == "eax":
+                machineCode = opCodesInstructionsForAx.get(instruction) + " " + immHex
+            else:
+                if regMem1 in reg32Bit:
+                    machineCode = "81 " + binaryToHex("11" + opCodesInstructions.get(instruction)[2:5] + reg32Bit.get(regMem1)) + " " + immHex
+                else:
+                    machineCode = "81 " + binaryToHex("11" + opCodesInstructions.get(instruction)[2:5] + reg16Bit.get(regMem1)) + " " + immHex
             if regMem in reg16Bit.keys():
                 machineCode = "66 " + machineCode
-                flaq = True
+                is16bit = True
             res.append(zeroExtend(hex(count)) + machineCode)
-            if flaq:
-                return len(immHex) // 3 + 2
-            return len(immHex) // 3 + 1
+            if is16bit:
+                return len(immHex) // 3 + 3
+            return len(immHex) // 3 + 2
     elif regMem in reg8Bit.keys():  # 8 bit register with imm
-        second = hex(imm)
-        newOpCode = "11" + opCodesInstructions.get(instruction)[2:]
-        first = binaryToHex(newOpCode + "01")
+        second = hex(imm)[2:]
+        if regMem1 == "al":
+            opCodeForAl = hex(int(opCodesInstructionsForAx.get(instruction), 16) - 1)[2:]
+            res.append(zeroExtend(hex(count)) + opCodeForAl + " " + second)
+            return 2
+        first = "11" + opCodesInstructions.get(instruction)[2:5] + reg8Bit.get(regMem1)
+        first = binaryToHex(first)
         res.append(zeroExtend(hex(count)) + "80 " + first + " " + second + " ")
         return 3
     else:
