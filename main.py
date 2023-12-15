@@ -322,7 +322,7 @@ def immOprand(instruction, regMem, imm, count, res):
         return 0
 
 
-with open('inputs.txt') as file:
+with open('input.txt') as file:
     inp = file.read()
     inpList = inp.splitlines()
     label = {}
