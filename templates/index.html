@@ -3,38 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="" >
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Flask Frontend</title>
 </head>
 <body>
-    <h1>Flask Frontend</h1>
-    <div>
-        <label for="input">Input:</label>
-        <textarea type="text" id="input" placeholder="write your instructions"></textarea>
-        <button onclick="runScript()">Run Script</button>
+<div>
+    <h1>x86 Assembler for assembly course in Shiraz University</h1>
+    <h3>This Assembler assemble these instruction types:</h3>
+    <pre>INSTRUCTION REG,REG   |   INSTRUCTION REG/MEM   |   INSTRUCTION MEM/REG   |   INSTRUCTION REG   |   INSTRUCTION IMM</pre>
+    <div class="inputDiv">
+        <label for="input">Enter your Assembly code:</label>
+        <textarea class="inputArea" type="text" id="input" cols="30" rows="10" placeholder="write your instructions"></textarea>
+        <button class="button" onclick="runScript()">Assemble</button>
     </div>
-    <div>
-        <h2>Output:</h2>
-        <pre id="output"></pre>
+    <div class="outputDiv">
+        <textarea class="readOnly" id="output" cols="30" rows="10"></textarea>
+    </div>
+</div>
+
+<div>
+    <h1>Introduction to what we do</h1>
+    <p> let's take a look at what happens when an assembler assembles a code. We use 32-bit assembly and support only
+        certain modes, so we're working to understand those modes better. Usually in supported format we have two
+        general byte to specify an instruction and its operand(s). 1) opCode 2) Mod-REG-R/M</p>
+    <div class="opcode">
+        <h3>opCode</h3>
+        <p>1. Six MSB bits that specify the Instruction.</p>
+        <img src="">
+        <p>2. The second bit, called ‘d’, shows whether the part in the second byte is for the destination or source. If
+            d = 0, REG is the source and R/M is the destination, otherwise, it’s the other way around.</p>
+        <p>3. The LSB bit, called ‘s’, shows whether the register in the operands is 8-bit or 16/32-bit. If s = 0, it
+            means REG is an 8-bit register, otherwise, it’s a 16/32-bit register. Question: how to understand whether a
+            register is 16-bit or 32-bit ? Answer: we add a prefix for 16-bit register to specify it from 32-bit.</p>
+    </div>
+    <div class="mod">
+        <h3>Mod-REG-R/M</h3>
+        <p>This byte also has three part: </p>
+        <ol>
+            <li>The two most significant bits (MSBs) represent the mod part, specifying the type of process we are
+                performing. We use only 11 and 00 mods in this project.
+            </li>
+            <img src="" alt="">
+            <li>Next three bits represent the REG part, show register code</li>
+            <li>The three least significant bits (LSBs) represent either the memory or the second register used in the
+                code.
+            </li>
+            <img src="" alt="">
+        </ol>
     </div>
 
-    <script>
-        function runScript() {
-            var input = document.getElementById('input').value;
+    <div>
+        <div class="one-operand">
+            <h3>One operand instructions</h3>
+            <p>These instructions have their own opCode type and we discuss them separately.</p>
+            <h4>inc:</h4>
+            <ol>
+                <li>The opcode for 32-bit registers is represented as 40h + [REG value]. This value is in hexadecimal
+                    format, and the addition should be performed using hexadecimal numbers.
+                </li>
+                <li>The opCode for 16-bit register is represented as 32-bit does but with an addition of 66 prefix.</li>
+                <li>The opCode of the 8-bit register is represented as “FE xx000xxx”. xx is mod and xxx is register
+                    value.
+                </li>
+            </ol>
+            <h4>dec</h4>
+            <ol>
+                <li>The opcode for 32-bit registers is represented as 48h + [REG value]. This value is in hexadecimal
+                    format, and the addition should be performed using hexadecimal numbers.
+                </li>
+                <li>The opCode for 16-bit register is represented as 32-bit does but with an addition of 66 prefix.</li>
+                <li>The opCode of the 8-bit register is represented as “FE xx001xxx”. xx is mod and xxx is register
+                    value.
+                </li>
+            </ol>
+            <h4>push</h4>
+            <ol>
+                <li>The opcode for 32-bit registers is represented as 50h + [REG value]. This value is in hexadecimal
+                    format, and the addition should be performed using hexadecimal numbers.
+                </li>
+                <li>The opCode for 16-bit register is represented as 32-bit does but with an addition of 66 prefix.</li>
+            </ol>
+            <p><i>Note: push instruction machine code when push an immediate value is “6a immValue”. If immValue is
+                between -128 and 127 it will be written in 1 byte otherwise written in 4 byte and ofcourse in little
+                endian.</i></p>
+            <h4>pop</h4>
+            <li>The opcode for 32-bit registers is represented as 58h + [REG value]. This value is in hexadecimal
+                format, and the addition should be performed using hexadecimal numbers.
+            </li>
+            <li>The opCode for 16-bit register is represented as 32-bit does but with an addition of 66 prefix.</li>
+        </div>
 
-            fetch('/assembler', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ input: input }),
-            })
-                // text/plain
+        <div class="jmp">
+            <h3>Jmp instruction</h3>
+            <p>Jmp instruction opCode is “eb” and the second byte of its machine code is the space of label between jmp
+                and label.</p>
+        </div>
+        <div class="imm">
+            <h3>immediate value</h3>
+            <p>When use immediate value in two instruction operands use these structures:</p>
+            <img src="">
+            <p>For other instructions add the instruction specific number to 04/05 and for the other formula replace
+                “000” with the Xs in instruction opCode( --XXX- ). Then convert the immediate value into hexadecimal
+                form and use it as the second part of machine code. </p>
+            <p><i>Note: if immediate value would be between -128 to 127 we convert it into 1 byte otherwise into 4
+                bytes.</i></p>
+
+        </div>
+    </div>
+
+
+</div>
+
+<script>
+    function runScript() {
+        var input = document.getElementById('input').value;
+
+        fetch('/assembler', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({input: input}),
+        })
+            // text/plain
             .then(response => response.json())
             .then(data => {
                 document.getElementById('output').innerText = data.output;
             });
-        }
-    </script>
+    }
+</script>
 </body>
 </html>

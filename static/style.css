@@ -16,7 +16,7 @@ p{
 .inputDiv{
     font-family: 'Indie Flower', cursive;
     font-size: 20px;
-    margin-top: 10rem;
+    margin-top: 5rem;
     text-align: center;
 }
 
@@ -37,7 +37,7 @@ label {
     padding: 15px;
     width: 80%;
     height: 20%;
-    font-size: 16px; 
+    font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
@@ -47,7 +47,7 @@ label {
     padding: 15px;
     width: 80%;
     height: 20%;
-    font-size: 16px; 
+    font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
@@ -70,7 +70,7 @@ button {
 }
 
 button:hover {
-    background-color: #45a049; 
+    background-color: #45a049;
     box-shadow: 0 8px 16px rgba(76, 175, 80, 0.7);
     transition: 0.3s;
 }
