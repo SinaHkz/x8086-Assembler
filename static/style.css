@@ -53,12 +53,10 @@ label {
     box-sizing: border-box;
 }
 
-button {
-    padding: 8px 20px;
-    border-radius: 0;
+.btn {
     overflow: hidden;
-
     display: inline-block;
+    position: relative;
     font-size: 20px;
     text-align: center;
     margin-top: 15px;
@@ -75,7 +73,7 @@ button {
     border-color: black;
 }
 
-button::before{
+.btn::before{
     position: absolute;
     content: "";
     top: 0;
@@ -87,13 +85,12 @@ button::before{
     transition: 0.6s;
 }
 
-button:hover {
-    background: transparent;
-    box-shadow: 0 8px 16px rgba(76, 175, 80, 0.7);
+.btn:hover {
+    box-shadow: 0 8px 16px rgb(0, 11, 128);
     transition: 0.3s;
 }
 
-button:hover::before{
+.btn:hover::before{
     transform: translateX(100%);
 
 }
