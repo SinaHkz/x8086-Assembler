@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=PT+Serif&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <!--{{ url_for('static', filename='style.css') }}-->
     <title>Flask Frontend</title>
 </head>
 <body>
     <div class="section1">
-        <h1>x86 Assembler for assembly course in Shiraz University</h1>
-        <h3>This Assembler assemble these instruction types:</h3>
-        <pre>INSTRUCTION REG,REG   |   INSTRUCTION REG/MEM   |   INSTRUCTION MEM/REG   |   INSTRUCTION REG   |   INSTRUCTION IMM</pre>
+        <h1 class="header">x86 Assembler for assembly course in Shiraz University</h1>
+        <h3 class="header-h3">This Assembler assemble these instruction types:</h3>
+        <pre>INSTRUCTION REG,REG   |   INSTRUCTION REG/MEM   |   INSTRUCTION MEM/REG   |   INSTRUCTION REG   |   INSTRUCTION IMM|   INSTRUCTION REG,IMM</pre>
         <div class="inputDiv">
             <label for="input">Enter your Assembly code:</label>
             <textarea class="inputArea" type="text" id="input" cols="30" rows="10" placeholder="write your instructions"></textarea>

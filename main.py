@@ -352,4 +352,4 @@ with open('inputs.txt') as file:
                 res[jmpLoc[i][1]] += str(hex(num))[2:]
 
     for i in res:
-        print(i)
+        print(i + '\n')

@@ -19,8 +19,6 @@ def run_script():
 
     # Execute your Python script with the input
     result = subprocess.check_output(['python', 'main.py', input_data], universal_newlines=True)
-    print(result)
-
     return jsonify({'output': result})
 
 
