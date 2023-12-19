@@ -312,36 +312,37 @@ with open('inputs.txt') as file:
     jmpLoc = []
     count = 0
     res = []
-
-    for i in range(len(inpList)):
-        checkLabel = inpList[i].split(":")
-        if len(checkLabel) == 2 and checkLabel[1] != "":  # label in a non-empty line
-            L = checkLabel[0].lower()
-            label[L] = count
-            instructionLine = checkLabel[1][1:].split(" ")
-        else:
-            instructionLine = inpList[i].split(" ")
-        instruction = instructionLine[0].lower()
-        if instruction[-1] == ":":  # label in an empty line
-            L = instruction[:-1]
-            label[L] = count
-            continue
-        if instruction == "jmp":  # check the jmp instruction
-            jmpLoc.append([instructionLine[1].lower(), len(res), count + 2])
-            res.append(zeroExtend(hex(count)) + "eb ")
-            count += 2
-            continue
-        regMem = instructionLine[1].split(",")  # separate registers
-        regMem1 = regMem[0].lower()
-        if len(regMem) > 1:  # two operands instructions
-            regMem2 = regMem[1].lower()
-            if regMem2 in reg32Bit.keys() or regMem2 in reg8Bit.keys() or regMem2 in reg16Bit.keys():
-                count += twoOperand(instruction, regMem1, regMem2, count, res)
+    try:
+        for i in range(len(inpList)):
+            checkLabel = inpList[i].split(":")
+            if len(checkLabel) == 2 and checkLabel[1] != "":  # label in a non-empty line
+                L = checkLabel[0].lower()
+                label[L] = count
+                instructionLine = checkLabel[1][1:].split(" ")
             else:
-                count += immOprand(instruction, regMem1, int(regMem2), count, res)
-        else:  # handle the one operand instruction
-            count += oneOperand(instruction, regMem1, count, res)
-
+                instructionLine = inpList[i].split(" ")
+            instruction = instructionLine[0].lower()
+            if instruction[-1] == ":":  # label in an empty line
+                L = instruction[:-1]
+                label[L] = count
+                continue
+            if instruction == "jmp":  # check the jmp instruction
+                jmpLoc.append([instructionLine[1].lower(), len(res), count + 2])
+                res.append(zeroExtend(hex(count)) + "eb ")
+                count += 2
+                continue
+            regMem = instructionLine[1].split(",")  # separate registers
+            regMem1 = regMem[0].lower()
+            if len(regMem) > 1:  # two operands instructions
+                regMem2 = regMem[1].lower()
+                if regMem2 in reg32Bit.keys() or regMem2 in reg8Bit.keys() or regMem2 in reg16Bit.keys():
+                    count += twoOperand(instruction, regMem1, regMem2, count, res)
+                else:
+                    count += immOprand(instruction, regMem1, int(regMem2), count, res)
+            else:  # handle the one operand instruction
+                count += oneOperand(instruction, regMem1, count, res)
+    except:
+        print("invalid input")
     for i in range(len(jmpLoc)):  # fill the jmp string with addresses
         if jmpLoc[i][0] in label.keys():
             if label[jmpLoc[i][0]] - jmpLoc[i][2] > 0:

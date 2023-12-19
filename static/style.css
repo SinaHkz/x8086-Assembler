@@ -28,8 +28,17 @@ p{
 }
 
 .outputDiv{
+    background-color: white;
+    border-radius: 20px;
     margin-top: 3rem;
-    text-align: center;
+    text-align: left;
+    border: 2px solid;
+    width: 80%;
+    margin-left: 11rem;
+    padding: 2rem;
+    padding-bottom: 10rem;
+    overflow: auto;
+    resize: vertical;
 }
 
 label {
@@ -40,6 +49,7 @@ label {
 }
 
 .inputArea {
+    font-family: 'Montserrat', sans-serif;
     margin: auto;
     padding: 15px;
     width: 80%;

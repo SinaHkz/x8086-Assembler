@@ -1,2 +1,1 @@
-push 432
-push 52
+push eax,ax
