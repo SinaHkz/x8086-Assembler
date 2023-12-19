@@ -1,1 +1,3 @@
-push eax,ax
+inc eax
+add eax,4324324
+xor al,ah
