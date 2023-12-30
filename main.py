@@ -213,7 +213,7 @@ def oneOperand(instruction, regMem1, count, res):
             res.append(zeroExtend(hex(count)) + "68 " + string)
             return len(string) // 3 + 1
         res.append(zeroExtend(hex(count)) + "6a " + string)
-        return len(string) // 3 + 1
+        return len(string) // 3 + 2
 
     elif instruction == "dec" and regMem1[0] != "[":
         if regMem1 in reg32Bit.keys():
@@ -366,5 +366,6 @@ with open('inputs.txt') as file:
                 num = label[jmpLoc[i][0]] - jmpLoc[i][2]
                 num += 256
                 res[jmpLoc[i][1]] += str(hex(num))[2:]
+
 for i in res:
     print(i)

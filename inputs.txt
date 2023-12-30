@@ -1,3 +1,10 @@
-inc eax
-add eax,4324324
-xor al,ah
+JMP bashe
+ADD eax,ecx
+first:
+XOR [eax],ebx
+INC di
+JMP first
+PUSH 113
+POP ebp
+AND ax,si
+bashe:
