@@ -15,8 +15,7 @@ Usually in supported format we have two general byte to specify an instruction a
 Opcode has three parts:
 1. Six MSB bits that specify the Instruction.
 
-
-   <img width="320" alt="Screenshot 2023-12-31 at 12 02 54 AM" src="https://github.com/SinaHkz/x8086-Assembler/assets/118515310/0829df62-07cd-43ba-a172-3e83d397b75c">
+<img width="320" alt="Screenshot 2023-12-31 at 12 02 54 AM" src="https://github.com/SinaHkz/x8086-Assembler/assets/118515310/0829df62-07cd-43ba-a172-3e83d397b75c">
 
    
 2. The second bit, called ‘d’, shows whether the part in the second byte is for the destination or source.
