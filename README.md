@@ -14,7 +14,10 @@ Usually in supported format we have two general byte to specify an instruction a
 <h2>opCode</h2>
 Opcode has three parts:
 1. Six MSB bits that specify the Instruction.
+
+
    <img width="320" alt="Screenshot 2023-12-31 at 12 02 54 AM" src="https://github.com/SinaHkz/x8086-Assembler/assets/118515310/0829df62-07cd-43ba-a172-3e83d397b75c">
+
    
 2. The second bit, called ‘d’, shows whether the part in the second byte is for the destination or source.
 If d = 0, REG is the source and R/M is the destination, otherwise, it’s the other way around.
@@ -27,10 +30,16 @@ Answer: we add a prefix for 16-bit register to specify it from 32-bit.
 This byte also has three part:
 1. The two most significant bits (MSBs) represent the mod part, specifying the type of
 process we are performing. We use only 11 and 00 mods in this project.
+
+
 <img width="443" alt="Screenshot 2023-12-31 at 12 04 37 AM" src="https://github.com/SinaHkz/x8086-Assembler/assets/118515310/f4bac2c3-0748-4ff8-8c1e-02fa54a2cec6">
+
+
 2. Next three bits represent the REG part, show register code
 3. The three least significant bits (LSBs) represent either the memory or the second register
 used in the code.
+
+
 <img width="436" alt="Screenshot 2023-12-31 at 12 05 05 AM" src="https://github.com/SinaHkz/x8086-Assembler/assets/118515310/8ca1b608-4866-422c-89ff-c1456c4c98ef">
 
 <h1>One operand instructions</h1>
