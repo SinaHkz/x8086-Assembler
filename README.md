@@ -7,11 +7,11 @@ I supported five general type of instructions:
 4. IMM → REG
 5. Simple JMP
 
-Introduction to what we do
+<h2>Introduction to what we do</h2>
 First let's take a look at what happens when an assembler assembles a code. We use 32-bit assembly and support only certain modes, so we're working to understand those modes better.
 Usually in supported format we have two general byte to specify an instruction and its operand(s).
 1) opCode 2) Mod-REG-R/M
-opCode
+<h2>opCode</h2>
 Opcode has three parts:
 1. Six MSB bits that specify the Instruction.
    <img width="320" alt="Screenshot 2023-12-31 at 12 02 54 AM" src="https://github.com/SinaHkz/x8086-Assembler/assets/118515310/0829df62-07cd-43ba-a172-3e83d397b75c">
@@ -23,7 +23,7 @@ If d = 0, REG is the source and R/M is the destination, otherwise, it’s the ot
 Question: how to understand whether a register is 16-bit or 32-bit ?
 Answer: we add a prefix for 16-bit register to specify it from 32-bit.
 
-Mod-REG-R/M
+<h2>Mod-REG-R/M</h2>
 This byte also has three part:
 1. The two most significant bits (MSBs) represent the mod part, specifying the type of
 process we are performing. We use only 11 and 00 mods in this project.
@@ -33,26 +33,26 @@ process we are performing. We use only 11 and 00 mods in this project.
 used in the code.
 <img width="436" alt="Screenshot 2023-12-31 at 12 05 05 AM" src="https://github.com/SinaHkz/x8086-Assembler/assets/118515310/8ca1b608-4866-422c-89ff-c1456c4c98ef">
 
-One operand instructions
+<h1>One operand instructions</h1>
 These instructions have their own opCode type and we discuss them separately.
-inc
+<h3>inc</h3>
 1. The opcode for 32-bit registers is represented as 40h + [REG value]. This value is in hexadecimal format, and the addition should be performed using hexadecimal numbers.
 2. The opCode for 16-bit register is represented as 32-bit does but with an addition of 66 prefix.
 3. The opCode of the 8-bit register is represented as “FE xx000xxx”. xx is mod and xxx is register value.
 
-dec
+<h3>dec</h3>
 1. The opcode for 32-bit registers is represented as 48h + [REG value]. This value is in hexadecimal format, and the addition should be performed using hexadecimal numbers.
 2. The opCode for 16-bit register is represented as 32-bit does but with an addition of 66 prefix.
 3. The opCode of the 8-bit register is represented as “FE xx001xxx”. xx is mod and xxx is register value.
-Push
+<h3>Push</h3>
 1. The opcode for 32-bit registers is represented as 50h + [REG value]. This value is in hexadecimal format, and the addition should be performed using hexadecimal numbers.
 2. The opCode for 16-bit register is represented as 32-bit does but with an addition of 66 prefix.
 Note: push instruction machine code when push an immediate value is “6a immValue”. If immValue is between -128 and 127 it will be written in 1 byte otherwise written in 4 byte and ofcourse in little endian.
-Pop
+<h3>Pop</h3>
 1. The opcode for 32-bit registers is represented as 58h + [REG value]. This value is in hexadecimal format, and the addition should be performed using hexadecimal numbers.
 2. The opCode for 16-bit register is represented as 32-bit does but with an addition of 66 prefix.
 Assembler for x86 7
-Jmp instruction
+<h1>Jmp instruction</h1>
 Jmp instruction opCode is “eb” and the second byte of its machine code is the space of label between jmp and label.
 
 
